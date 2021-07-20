@@ -36,6 +36,7 @@ parser.add_argument("--intensity", type=float, default=128)
 parser.add_argument("--gpu", dest="gpu", action="store_true")
 parser.add_argument("--colab", dest="colab", action="store_true")
 parser.add_argument("--local", dest="colab", action="store_false")
+parser.add_argument("--alum", dest="alum", action="store_true")
 parser.add_argument("--n_folds", type=int, default=6)
 parser.set_defaults(gpu=False, colab=False)
 
@@ -58,6 +59,7 @@ intensity = args.intensity
 gpu = args.gpu
 colab = args.colab
 n_folds = args.n_folds
+alum = args.alum
 
 update_interval = update_steps * batch_size
 
@@ -74,9 +76,15 @@ print("Running on Device = %s\n" % (device))
 if colab:
     dataset_path = "/content/drive/MyDrive/Isabel/MNIST"
     dirName = "/content/drive/MyDrive/Isabel/networks/"
+    dirName_o = "/content/drive/MyDrive/Isabel/networks/"
+elif alum:
+    dataset_path = "/content/drive/MyDrive/data/MNIST"
+    dirName = "/content/drive/MyDrive/networks/"
+    dirName_o = "/content/drive/MyDrive/networks/"
 else:
     dataset_path = "/home/iferrera/bindsnet/bindsnet/data/MNIST"
     dirName = "/home/iferrera/networks/"
+    dirName_o = "/home/iferrera/networks/"
 # Create the directory to store the networks
 
 if not os.path.exists(dirName):
@@ -194,7 +202,7 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     ############ SAVE THE NETWORK AND ITS FILES ####################
 
-    dirName = dirName + str(n_neurons) + "N_" + str(batch_size) + "BS_" + str(
+    dirName = dirName_o + str(n_neurons) + "N_" + str(batch_size) + "BS_" + str(
         n_epochs) + "E_" + str(update_steps) + "US_" + str(n_folds) + "TF_" + str(fold+1) + "CF"
     os.mkdir(dirName)
 
