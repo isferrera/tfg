@@ -77,14 +77,10 @@ if colab:
     dataset_path = "/content/drive/MyDrive/Isabel/MNIST"
     dirName = "/content/drive/MyDrive/Isabel/networks/"
     dirName_o = "/content/drive/MyDrive/Isabel/networks/"
-elif alum:
-    dataset_path = "/content/drive/MyDrive/data/MNIST"
-    dirName = "/content/drive/MyDrive/networks/"
-    dirName_o = "/content/drive/MyDrive/networks/"
 else:
     dataset_path = "/home/iferrera/bindsnet/bindsnet/data/MNIST"
     dirName = "/home/iferrera/networks/"
-    dirName_o = "/home/iferrera/networks/"
+    dirName_o = "networks/"
 # Create the directory to store the networks
 
 if not os.path.exists(dirName):
@@ -94,7 +90,7 @@ if not os.path.exists(dirName):
 dataset = MNIST(
     PoissonEncoder(time=time, dt=dt),
     None,
-    root=dataset_path,
+    root="./data/MNIST",
     download=False,
     train=True,
     transform=transforms.Compose(
