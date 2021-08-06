@@ -78,9 +78,8 @@ if colab:
     dirName = "/content/drive/MyDrive/Isabel/networks/"
     dirName_o = "/content/drive/MyDrive/Isabel/networks/"
 else:
-    dataset_path = "/home/iferrera/bindsnet/bindsnet/data/MNIST"
-    dirName = "/home/iferrera/networks/"
     dirName_o = "networks/"
+    dirName = "networks/"
 # Create the directory to store the networks
 
 if not os.path.exists(dirName):
