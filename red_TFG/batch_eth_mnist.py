@@ -73,13 +73,9 @@ else:
 torch.manual_seed(seed)
 print("Running on Device = %s\n" % (device))
 
-if colab:
-    dataset_path = "/content/drive/MyDrive/Isabel/MNIST"
-    dirName = "/content/drive/MyDrive/Isabel/networks/"
-    dirName_o = "/content/drive/MyDrive/Isabel/networks/"
-else:
-    dirName_o = "networks/"
-    dirName = "networks/"
+
+dirName_o = "networks/"
+dirName = "networks/"
 # Create the directory to store the networks
 
 if not os.path.exists(dirName):
@@ -352,3 +348,84 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     print("\nEvaluation validation set complete.\n")
     ######################################
+
+    
+    ################# EVALUATION VALIDATION SET #########################
+    # Load MNIST data.
+    test_dataset = MNIST(
+        PoissonEncoder(time=time, dt=dt),
+        None,
+        root= "./data/MNIST",
+        download=False,
+        train=False,
+        transform=transforms.Compose(
+            [transforms.ToTensor(), transforms.Lambda(lambda x: x * intensity)]
+        ),
+    )
+
+    # Create a dataloader to iterate and batch data
+    test_dataloader = DataLoader(
+        test_dataset,
+        batch_size=1,
+        shuffle=True,
+        num_workers=n_workers,
+        pin_memory=gpu,
+    )
+
+    # Validation set accuracies
+    accuracy = {"all": 0, "proportion": 0}
+
+    print("Begin evaluation test set.\n")
+    network.train(mode=False)
+
+    folds_test_samples = 6000
+
+    predictions =[]
+    actual_labels = []
+    for step, batch in enumerate(tqdm(test_dataloader, desc="Batches processed")):
+        if step >= folds_test_samples:
+            break
+        # Get next input sample.
+        inputs = {"X": batch["encoded_image"]}
+        if gpu:
+            inputs = {k: v.cuda() for k, v in inputs.items()}
+
+        # Run the network on the input.
+        network.run(inputs=inputs, time=time, input_time_dim=1)
+
+        # Add to spikes recording.
+        spike_record = spikes["Ae"].get("s").permute((1, 0, 2))
+
+        # Convert the array of labels into a tensor
+        label_tensor = torch.tensor(batch["label"], device=device)
+
+        # Get network predictions.
+        all_activity_pred = all_activity(
+            spikes=spike_record, assignments=assignments, n_labels=n_classes
+        )
+        proportion_pred = proportion_weighting(
+            spikes=spike_record,
+            assignments=assignments,
+            proportions=proportions,
+            n_labels=n_classes,
+        )
+        predictions.append(all_activity_pred.item())
+        actual_labels.append(label_tensor.item())
+        # Compute network accuracy according to available classification strategies.
+        accuracy["all"] += float(torch.sum(label_tensor.long()
+                                    == all_activity_pred).item())
+        accuracy["proportion"] += float(
+            torch.sum(label_tensor.long() == proportion_pred).item()
+        )
+
+        network.reset_state_variables()  # Reset state variables.
+
+    all_mean_accuracy = accuracy["all"] / folds_test_samples
+    proportion_mean_accuracy = accuracy["proportion"] / folds_test_samples
+
+    print("\nAll accuracy test set: %.2f" % (all_mean_accuracy*100))
+    print("Proportion weighting test validation set: %.2f \n" %
+            (proportion_mean_accuracy))
+
+    print("\nEvaluation test set complete.\n")
+
