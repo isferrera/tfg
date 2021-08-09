@@ -78,27 +78,19 @@ if colab:
     dataset_path = "/content/drive/MyDrive/Isabel/MNIST"
     dirName = "/content/drive/MyDrive/Isabel/networks/"
     dirName_o = "/content/drive/MyDrive/Isabel/networks/"
-    dirName_n = "/content/drive/MyDrive/Isabel/networks/400N_1BS_5E_1US_3TF_1CF"
-elif alum:
-    dataset_path = "/content/drive/MyDrive/data/MNIST"
-    dirName = "/content/drive/MyDrive/networks/"
-    dirName_o = "/content/drive/MyDrive/networks/"
-    dirName_n = "/content/drive/MyDrive/networks/400N_1BS_5E_1US_3TF_1CF"
 else:
-    dataset_path = "/home/iferrera/bindsnet/bindsnet/data/MNIST"
-    dirName = "/home/iferrera/networks/"
-    dirName_o = "/home/iferrera/networks/"
-    dirName_n = "/home/iferrera/networks/400N_1BS_5E_1US_3TF_1CF"
+    dirName_o = "networks/"
+    dirName = "networks/"
+    dirName_n = "networks/1600N_1BS_8E_1US_3TF_1CF"
 # Create the directory to store the networks
 
-if not os.path.exists(dirName):
-    os.mkdir(dirName)
+
 
 # Load MNIST train data
 dataset = MNIST(
     PoissonEncoder(time=time, dt=dt),
     None,
-    root=dataset_path,
+    root="./data/MNIST",
     download=False,
     train=True,
     transform=transforms.Compose(
@@ -121,7 +113,7 @@ network = DiehlAndCook2015(
 
 # Directs network to GPU
 if gpu:
-    network.to("cuda")
+    network.to("cpu")
 
 # Neuron assignments and spike proportions.
 n_classes = 10
@@ -142,11 +134,11 @@ spike_record = torch.zeros(
 ###################### LOAD THE NETWORK ########################
 
 
-network = load(dirName_n + "/network.pt", map_location="cpu", learning=False)
+network = load(dirName_n + "/network.pt", map_location=torch.device('cpu'), learning=False)
 
-assignments = torch.load(dirName_n + "/assignments.pt")
+assignments = torch.load(dirName_n + "/assignments.pt", map_location=torch.device('cpu'))
 
-proportions = torch.load(dirName_n + "/proportions.pt")
+proportions = torch.load(dirName_n + "/proportions.pt", map_location=torch.device('cpu'))
 
 # Set up monitors for spikes
 spikes = {}
@@ -163,7 +155,7 @@ for layer in set(network.layers):
 test_dataset = MNIST(
     PoissonEncoder(time=time, dt=dt),
     None,
-    root= dataset_path,
+    root= "./data/MNIST",
     download=False,
     train=False,
     transform=transforms.Compose(
