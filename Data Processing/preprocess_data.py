@@ -82,15 +82,18 @@ def _preprocess_data(src_dst_meta):
         decimation_factor =  math.floor((samples/16000)*285.7)
         from lyon.calc import LyonCalc
         calc = LyonCalc()
+        #decimation_factor and step_factor creates a squared image
         coch = calc.lyon_passive_ear(data, decimation_factor = decimation_factor, step_factor = 0.38)
         x = coch.shape[0]
         ct = coch.T
+        #normalize intensity values and set it from 0 to 255 
         ct = (ct*255)/maximo
         from skimage.transform import resize
         resized = resize(ct, (28, 28))
         plt.imshow(resized, cmap='gray')
         plt.clim(0,255)
         plt.axis('off')
+        #save the image
         plt.savefig(os.path.join(dst, "Im_{}_{}_{}.jpeg".format(dig, vp, rep)),bbox_inches='tight',pad_inches = 0, dpi=7.75)
 
 
