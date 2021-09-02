@@ -19,11 +19,7 @@ pip install pillow
 
 2\. Change the appropriate labels in `batches.meta.txt`
 
-3\. then use the following bash script which processes the images, rescaling all of the png's you placed in the folders the MNIST standard 28x28pixel size
-
-`./resize-script.sh`
-
-4\. lastly, run the following python script to fold all the pics and categories into a single ble binary -- binary will appear as `ubyte` files ready to tar
+3\. lastly, run the following python script to fold all the pics and categories into a single ble binary -- binary will appear as `ubyte` files ready to tar
 
 `python convert-images-to-mnist-format.py`
 
@@ -34,61 +30,3 @@ You now have the files, and can replace the the conventional data in any standar
 
 Enjoy!
 
-# Tree
-
-example of where files will appear/where-to put png's (ignore placeholder.txt, this is only there so that git could check in their parent folders -- since empty folders can't be committed):
-```
-
-.
-├── batches.meta.txt
-├── convert-images-to-mnist-format.py
-├── LICENSE
-├── README.md
-├── resize-script.sh
-├── test-images
-│   ├── 0
-│   │   ├── home-cat.png
-│   │   └── placeholder.txt
-│   ├── 1
-│   │   ├── dog-07.png
-│   │   └── placeholder.txt
-│   ├── 2
-│   │   └── placeholder.txt
-│   ├── 3
-│   │   └── placeholder.txt
-│   ├── 4
-│   │   └── placeholder.txt
-│   ├── 5
-│   │   └── placeholder.txt
-│   ├── 6
-│   │   └── placeholder.txt
-│   ├── 7
-│   │   └── placeholder.txt
-│   ├── 8
-│   │   └── placeholder.txt
-│   └── 9
-│       └── placeholder.txt
-└── training-images
-    ├── 0
-    │   ├── home-cat.png
-    │   └── placeholder.txt
-    ├── 1
-    │   ├── dog-07.png
-    │   └── placeholder.txt
-    ├── 2
-    │   └── placeholder.txt
-    ├── 3
-    │   └── placeholder.txt
-    ├── 4
-    │   └── placeholder.txt
-    ├── 5
-    │   └── placeholder.txt
-    ├── 6
-    │   └── placeholder.txt
-    ├── 7
-    │   └── placeholder.txt
-    ├── 8
-    │   └── placeholder.txt
-    └── 9
-        └── placeholder.txt
-```
