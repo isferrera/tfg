@@ -34,9 +34,7 @@ parser.add_argument("--time", type=int, default=100)
 parser.add_argument("--dt", type=int, default=1.0)
 parser.add_argument("--intensity", type=float, default=128)
 parser.add_argument("--gpu", dest="gpu", action="store_true")
-parser.add_argument("--colab", dest="colab", action="store_true")
 parser.add_argument("--local", dest="colab", action="store_false")
-parser.add_argument("--alum", dest="alum", action="store_true")
 parser.add_argument("--n_folds", type=int, default=6)
 parser.set_defaults(gpu=False, colab=False)
 
@@ -57,9 +55,7 @@ time = args.time
 dt = args.dt
 intensity = args.intensity
 gpu = args.gpu
-colab = args.colab
 n_folds = args.n_folds
-alum = args.alum
 
 update_interval = update_steps * batch_size
 
@@ -81,7 +77,7 @@ dirName = "networks/"
 if not os.path.exists(dirName):
     os.mkdir(dirName)
 
-# Load MNIST train data
+# Load train data
 dataset = MNIST(
     PoissonEncoder(time=time, dt=dt),
     None,
@@ -203,21 +199,6 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     torch.save(proportions, dirName + "/proportions.pt")
 
-    ###################### LOAD THE NETWORK ########################
-
-    # network = load(dirName + "/network.pt", map_location="cpu", learning=False)
-
-    # assignments = torch.load(dirName + "/assignments.pt")
-
-    # proportions = torch.load(dirName + "/proportions.pt")
-
-    # # Set up monitors for spikes
-    # spikes = {}
-    # for layer in set(network.layers):
-    #     spikes[layer] = Monitor(
-    #         network.layers[layer], state_vars=["s"], time=int(time / dt), device=device
-    #     )
-    #     network.add_monitor(spikes[layer], name="%s_spikes" % layer)
 
     ################# EVALUATION TRAIN SET #########################
     train_sampler = SubsetRandomSampler(train_indices)
@@ -279,10 +260,9 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     print("\nAll accuracy train set: %.2f" % (all_mean_accuracy*100))
     print("Proportion weighting accuracy train set: %.2f" %
-          (proportion_mean_accuracy))
+          (proportion_mean_accuracy*100))
 
     print("\nEvaluation train set complete.\n")
-    #####################################################################
 
     ################# EVALUATION VALIDATION SET #########################
     val_sampler = SubsetRandomSampler(val_indices)
@@ -344,11 +324,9 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     print("\nAll accuracy validation set: %.2f" % (all_mean_accuracy*100))
     print("Proportion weighting accuracy validation set: %.2f \n" %
-          (proportion_mean_accuracy))
+          (proportion_mean_accuracy*100))
 
     print("\nEvaluation validation set complete.\n")
-    ######################################
-
     
     ################# EVALUATION VALIDATION SET #########################
     # Load MNIST data.
@@ -425,7 +403,7 @@ for fold, (train_indices, val_indices) in enumerate(skfold.split(np.zeros(n_trai
 
     print("\nAll accuracy test set: %.2f" % (all_mean_accuracy*100))
     print("Proportion weighting test validation set: %.2f \n" %
-            (proportion_mean_accuracy))
+            (proportion_mean_accuracy*100))
 
     print("\nEvaluation test set complete.\n")
 
